@@ -10,14 +10,14 @@ class SpotManager(ABC):
         self.spot_lookup_strategy = strategy
         self.lock = threading.RLock()
 
-    @abstractmethod
     def get_free_spot(self) -> Optional[ParkingSpot]:
-        pass
+        with self.lock:
+            return self.spot_lookup_strategy.select_free_spot(self.spots)
     
-    @abstractmethod
     def park(self, spot: ParkingSpot):
-        pass
+        with self.lock:
+            spot.park_vehicle()
 
-    @abstractmethod
     def unpark(self, spot: ParkingSpot):
-        pass
+        with self.lock:
+            spot.unpark_vehicle()
